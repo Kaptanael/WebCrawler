@@ -20,15 +20,17 @@ namespace WebCrawler.Api.Controllers
 
         public ArticlesController(ILogger<ArticlesController> logger, IArticleService articleService)
         {
+            _logger = logger;
             _articleService = articleService;
         }
-        
+
+        [Route("get-article")]
         [HttpGet]
         public async Task<IActionResult> GetArticle()
         {
             try
             {
-                var articlesToReturn = await _articleService.GetAllAsync();
+                var articlesToReturn = await _articleService.GetAllArticleAsync();
 
                 if (articlesToReturn == null)
                 {
@@ -43,13 +45,14 @@ namespace WebCrawler.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
-        
-        [HttpGet("{id}")]
+
+        [Route("get-article/{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetArticle(long id)
         {
             try
             {
-                var articleToReturn = await _articleService.GetByIdAsync(id);
+                var articleToReturn = await _articleService.GetArticleByIdAsync(id);
 
                 if (articleToReturn == null)
                 {
@@ -63,11 +66,11 @@ namespace WebCrawler.Api.Controllers
                 _logger.LogError(ex.Message, ex.StackTrace);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-        }       
-        
-        
+        }
+
+        [Route("save-article")]
         [HttpPost]
-        public async Task<IActionResult> PostArticle([FromBody] Article article)
+        public async Task<IActionResult> PostArticle([FromBody] ArticleForCreateDto article)
         {
             if (!ModelState.IsValid)
             {
@@ -76,8 +79,9 @@ namespace WebCrawler.Api.Controllers
 
             try
             {
-                var messageToReturn = await _articleService.AddAsync(article);                
-                return StatusCode(201);
+                var result = await _articleService.InsertArticleAsync(article);
+                return StatusCode((int)HttpStatusCode.Created);
+
             }
             catch (Exception ex)
             {
@@ -85,6 +89,21 @@ namespace WebCrawler.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
-          
+
+        [Route("save-articles")]
+        [HttpPost]
+        public async Task<IActionResult> PostArticles([FromBody] List<ArticleForCreateDto> articles)
+        {
+            try
+            {
+                var result = await _articleService.InsertArticlesAsync(articles);
+                return StatusCode((int)HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex.StackTrace);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }

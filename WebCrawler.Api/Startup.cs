@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using WebCrawler.Api.Data;
+using WebCrawler.Api.Mapper;
 using WebCrawler.Api.Repository;
 using WebCrawler.Api.Services;
 
@@ -20,6 +22,17 @@ namespace WebCrawler.Api
 
         public IConfiguration Configuration { get; }
 
+        private void AddMapper(IServiceCollection services)
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+        }
+
         private void AddReposirories(IServiceCollection services)
         {
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
@@ -27,8 +40,7 @@ namespace WebCrawler.Api
         }
 
         private void AddServices(IServiceCollection services)
-        {
-            services.AddTransient(typeof(IBaseService<>), typeof(BaseService<>));
+        {            
             services.AddTransient(typeof(IArticleService), typeof(ArticleService));
         }
 
@@ -36,6 +48,8 @@ namespace WebCrawler.Api
         {
             services.AddDbContext<WebCrawlerDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("WebCrawlerDbContext")));
+
+            AddMapper(services);
 
             AddReposirories(services);
 
