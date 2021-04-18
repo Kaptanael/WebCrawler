@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace WebCrawler.Api.Entity
+namespace WebCrawler.Api
 {
     public class Article
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public DateTime Date { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }

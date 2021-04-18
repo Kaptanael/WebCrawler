@@ -10,8 +10,8 @@ using WebCrawler.Api.Data;
 namespace WebCrawler.Api.Migrations
 {
     [DbContext(typeof(WebCrawlerDbContext))]
-    [Migration("20210418100549_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210418103252_InitialcCreate")]
+    partial class InitialcCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,11 +21,11 @@ namespace WebCrawler.Api.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("WebCrawler.Api.Entity.Article", b =>
+            modelBuilder.Entity("WebCrawler.Api.Article", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Archived")

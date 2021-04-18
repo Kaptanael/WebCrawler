@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebCrawler.Api.Entity;
 using WebCrawler.Api.EntityConfiguration;
 
 namespace WebCrawler.Api.Data

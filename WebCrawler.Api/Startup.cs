@@ -1,18 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using WebCrawler.Api.Data;
+using WebCrawler.Api.Repository;
+using WebCrawler.Api.Services;
 
 namespace WebCrawler.Api
 {
@@ -24,11 +19,27 @@ namespace WebCrawler.Api
         }
 
         public IConfiguration Configuration { get; }
-        
+
+        private void AddReposirories(IServiceCollection services)
+        {
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient(typeof(IArticleRepository), typeof(ArticleRepository));
+        }
+
+        private void AddServices(IServiceCollection services)
+        {
+            services.AddTransient(typeof(IBaseService<>), typeof(BaseService<>));
+            services.AddTransient(typeof(IArticleService), typeof(ArticleService));
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<WebCrawlerDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("WebCrawlerDbContext")));
+
+            AddReposirories(services);
+
+            AddServices(services);
 
             services.AddControllers();
 

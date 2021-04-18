@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebCrawler.Api.Data;
-using WebCrawler.Api.Entity;
+using WebCrawler.Api.Services;
 
 namespace WebCrawler.Api.Controllers
 {
@@ -14,88 +15,76 @@ namespace WebCrawler.Api.Controllers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly WebCrawlerDbContext _context;
+        private readonly ILogger<ArticlesController> _logger;
+        private readonly IArticleService _articleService;
 
-        public ArticlesController(WebCrawlerDbContext context)
+        public ArticlesController(ILogger<ArticlesController> logger, IArticleService articleService)
         {
-            _context = context;
+            _articleService = articleService;
         }
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Article>>> GetArticle()
+        public async Task<IActionResult> GetArticle()
         {
-            return await _context.Article.ToListAsync();
-        }
-        
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Article>> GetArticle(int id)
-        {
-            var article = await _context.Article.FindAsync(id);
-
-            if (article == null)
-            {
-                return NotFound();
-            }
-
-            return article;
-        }
-        
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutArticle(int id, Article article)
-        {
-            if (id != article.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(article).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ArticleExists(id))
+                var articlesToReturn = await _articleService.GetAllAsync();
+
+                if (articlesToReturn == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                return Ok(articlesToReturn);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex.StackTrace);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
+        
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetArticle(long id)
+        {
+            try
+            {
+                var articleToReturn = await _articleService.GetByIdAsync(id);
+
+                if (articleToReturn == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(articleToReturn);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex.StackTrace);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }       
+        
         
         [HttpPost]
-        public async Task<ActionResult<Article>> PostArticle(Article article)
+        public async Task<IActionResult> PostArticle([FromBody] Article article)
         {
-            _context.Article.Add(article);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetArticle", new { id = article.Id }, article);
-        }
-        
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteArticle(int id)
-        {
-            var article = await _context.Article.FindAsync(id);
-            if (article == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(article);
             }
 
-            _context.Article.Remove(article);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            try
+            {
+                var messageToReturn = await _articleService.AddAsync(article);                
+                return StatusCode(201);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex.StackTrace);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
-
-        private bool ArticleExists(int id)
-        {
-            return _context.Article.Any(e => e.Id == id);
-        }
+          
     }
 }
