@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using WebCrawler.Api.Data;
 
 namespace WebCrawler.Api
 {
@@ -32,6 +34,9 @@ namespace WebCrawler.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebCrawler.Api", Version = "v1" });
             });
+
+            services.AddDbContext<WebCrawlerDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("WebCrawlerDbContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
