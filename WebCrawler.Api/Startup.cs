@@ -24,12 +24,14 @@ namespace WebCrawler.Api
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<WebCrawlerDbContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("WebCrawlerDbContext")));
 
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebCrawler.Api", Version = "v1" });
@@ -38,8 +40,7 @@ namespace WebCrawler.Api
             services.AddDbContext<WebCrawlerDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("WebCrawlerDbContext")));
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -47,13 +48,9 @@ namespace WebCrawler.Api
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebCrawler.Api v1"));
-            }
+            }            
 
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
+            app.UseRouting();           
 
             app.UseEndpoints(endpoints =>
             {

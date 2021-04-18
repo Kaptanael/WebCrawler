@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace WebCrawler.Api.Models
+namespace WebCrawler.Api.Entity
 {
     public class Article
     {

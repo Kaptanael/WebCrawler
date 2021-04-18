@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using WebCrawler.Api.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using WebCrawler.Api.Entity;
+using WebCrawler.Api.EntityConfiguration;
 
 namespace WebCrawler.Api.Data
 {
@@ -14,6 +11,12 @@ namespace WebCrawler.Api.Data
         {
         }
 
-        public DbSet<WebCrawler.Api.Models.Article> Article { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration<Article>(new ArticleConfig());            
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Article> Article { get; set; }
     }
 }

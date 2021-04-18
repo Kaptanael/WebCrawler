@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebCrawler.Api.Data;
-using WebCrawler.Api.Models;
+using WebCrawler.Api.Entity;
 
 namespace WebCrawler.Api.Controllers
 {
