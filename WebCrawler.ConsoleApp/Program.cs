@@ -13,7 +13,6 @@ namespace WebCrawler.ConsoleApp
         static async Task Main(string[] args)
         {
             Console.WriteLine("Enter Search Words: ");
-
             string inputString = Console.ReadLine();            
             string searchString = inputString.Replace(" ", "+");
 
@@ -24,7 +23,6 @@ namespace WebCrawler.ConsoleApp
             {
                 Console.WriteLine("Bing articles has been inserted successfully.");
             }
-
             Console.ReadLine();
         }
 
