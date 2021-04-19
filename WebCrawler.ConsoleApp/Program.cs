@@ -51,7 +51,7 @@ namespace WebCrawler.ConsoleApp
         {
             List<ArticleForListDto> articleForListDtos = null;
 
-            var url = $"https://www.bing.com/search?q=florida+man+august+23&form=QBLH&sp=-1&pq=florida+man+august+23&sc=7-21&qs=n&sk=&cvid=B5B32D1BB6A240C9BAE1B87DB7C63235";
+            var url = $"https://www.bing.com/search?q={searchString}&form=QBLH&sp=-1&pq=florida+man+august+23&sc=7-21&qs=n&sk=&cvid=B5B32D1BB6A240C9BAE1B87DB7C63235";
             
             var httpClient = new HttpClient();
             var html = await httpClient.GetStringAsync(url);
